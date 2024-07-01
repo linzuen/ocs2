@@ -64,6 +64,7 @@ SystemObservation readObservationMsg(const ocs2_msgs::mpc_observation& observati
   observation.time = observationMsg.time;
 
   const auto& state = observationMsg.state.value;
+  // Map是Eigen中一个非常有用却又很容易被忽略的类，可以用它避免很多不必要的内存拷贝
   observation.state = Eigen::Map<const Eigen::VectorXf>(state.data(), state.size()).cast<scalar_t>();
 
   const auto& input = observationMsg.input.value;

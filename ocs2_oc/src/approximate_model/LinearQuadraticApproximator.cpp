@@ -186,6 +186,7 @@ ScalarFunctionQuadraticApproximation approximateCost(const OptimalControlProblem
   // get the state-input cost approximations
   auto cost = problem.costPtr->getQuadraticApproximation(time, state, input, targetTrajectories, preComputation);
 
+    // todo 这里包含了state 和 input 的约束 所以直接加就行了
   if (!problem.softConstraintPtr->empty()) {
     cost += problem.softConstraintPtr->getQuadraticApproximation(time, state, input, targetTrajectories, preComputation);
   }

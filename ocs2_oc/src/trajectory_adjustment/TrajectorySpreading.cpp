@@ -74,12 +74,19 @@ auto TrajectorySpreading::set(const ModeSchedule& oldModeSchedule, const ModeSch
   size_t w = 0;
   while (oldStartIndexOfMatchedSequence < oldModeSchedule.modeSequence.size()) {
     // +1 to include the last active mode
+    // info 头文件是 <algorithm>
+    // todo 寻找两个范围出现不同的首个位置，如果都相同，则返回两个尾后迭代器
+    // todo 常量迭代器：cbegin()、cend()、crbegin()、crend()
+    // +1 是模拟尾后迭代器
     const auto mismatchedIndex = std::mismatch(oldModeSchedule.modeSequence.cbegin() + oldStartIndexOfMatchedSequence,
                                                oldModeSchedule.modeSequence.cbegin() + oldLastActiveModeIndex + 1,
                                                newModeSchedule.modeSequence.cbegin() + newStartIndexOfMatchedSequence,
                                                newModeSchedule.modeSequence.cbegin() + newLastActiveModeIndex + 1);
 
     w = std::distance(oldModeSchedule.modeSequence.begin() + oldStartIndexOfMatchedSequence, mismatchedIndex.first);
+
+    // w > 0 寻找两个范围出现不同的首个位置 index 不是刚刚开始的
+    // w = 0 说明寻找两个范围出现不同的首个位置 index 就是刚刚开始就不同了
 
     if (w > 0) {
       break;

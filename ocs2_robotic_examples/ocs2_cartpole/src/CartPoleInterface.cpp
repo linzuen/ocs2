@@ -112,6 +112,12 @@ CartPoleInterface::CartPoleInterface(const std::string& taskFile, const std::str
     loadData::loadPenaltyConfig(taskFile, "bounds_penalty_config", boundsConfig, verbose);
     return penalty_type::create(boundsConfig);
   };
+  
+  // 在Eigen库的线性代数模块中，finished是一个用于内存分配的特定函数。
+  // 它用于指定矩阵或向量的内存分配策略。具体来说，finished函数表示将释放底层内存并暂停未来动态内存分配。
+  // 它将当前矩阵或向量标记为已完成，
+  // 意味着该对象的大小将不再改变。当对象被标记为”finished”后，任何试图改变其大小的操作将导致编译错误
+
   auto getConstraint = [&]() {
     constexpr size_t numIneqConstraint = 2;
     const vector_t e = (vector_t(numIneqConstraint) << cartPoleParameters.maxInput_, cartPoleParameters.maxInput_).finished();

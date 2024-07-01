@@ -153,6 +153,7 @@ void LeggedRobotInterface::setupOptimalConrolProblem(const std::string& taskFile
   // friction cone settings
   scalar_t frictionCoefficient = 0.7;
   RelaxedBarrierPenalty::Config barrierPenaltyConfig;
+    // todo 从元素引用中生成一个tuple元组
   std::tie(frictionCoefficient, barrierPenaltyConfig) = loadFrictionConeSettings(taskFile, verbose);
 
   bool useAnalyticalGradientsConstraints = false;

@@ -1,3 +1,11 @@
+/*
+ * @Author: linzuen 13415257309@163.com
+ * @Date: 2024-07-01 16:36:50
+ * @LastEditors: linzuen 13415257309@163.com
+ * @LastEditTime: 2024-07-01 16:56:25
+ * @FilePath: /ocs2/ocs2_robotic_examples/ocs2_legged_robot_ros/src/LeggedRobotDummyNode.cpp
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /******************************************************************************
 Copyright (c) 2021, Farbod Farshidian. All rights reserved.
 
@@ -80,6 +88,7 @@ int main(int argc, char** argv) {
   initObservation.mode = ModeNumber::STANCE;
 
   // Initial command
+    // * 可以修改这里的命令，来改变机器人的初始状态 ，比如修改机器人初始为站立状态
   TargetTrajectories initTargetTrajectories({0.0}, {initObservation.state}, {initObservation.input});
 
   // run dummy

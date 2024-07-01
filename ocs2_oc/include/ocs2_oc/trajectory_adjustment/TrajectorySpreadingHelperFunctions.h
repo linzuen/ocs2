@@ -118,6 +118,7 @@ inline void trajectorySpread(const TrajectorySpreading& trajectorySpreading, con
 /**
  * Adjusts in-place a primal solution based on the last changes in mode schedule using a TrajectorySpreading strategy.
  * Note: PrimalSolution::controllerPtr_ will not be adjusted.
+ *  * * 使用“TrajectorySpreading”策略，根据模式计划中的最后更改，就地调整原始解决方案。
  *
  * @param [in] oldModeSchedule: The old mode schedule associated to the trajectories which should be adjusted.
  * @param [in] newModeSchedule: The new mode schedule that should be adapted to.

@@ -80,23 +80,28 @@ void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule, const feet
   const auto& modeSequence = modeSchedule.modeSequence;
   const auto& eventTimes = modeSchedule.eventTimes;
 
+    // todo 返回4条腿 根据modeSchedule.modeSequence中的每个modeNumber转换为对应的contactFlag true or false
   const auto eesContactFlagStocks = extractContactFlags(modeSequence);
 
   feet_array_t<std::vector<int>> startTimesIndices;
   feet_array_t<std::vector<int>> finalTimesIndices;
+    // * for 循环4条腿 ，返回每条腿的swing leg项 开始的index和结束的index，站立腿的index为0
   for (size_t leg = 0; leg < numFeet_; leg++) {
     std::tie(startTimesIndices[leg], finalTimesIndices[leg]) = updateFootSchedule(eesContactFlagStocks[leg]);
   }
-
+    // 也是4条腿的循环 
   for (size_t j = 0; j < numFeet_; j++) {
     feetHeightTrajectories_[j].clear();
     feetHeightTrajectories_[j].reserve(modeSequence.size());
     for (int p = 0; p < modeSequence.size(); ++p) {
+      // INFO 如果是swing leg
       if (!eesContactFlagStocks[j][p]) {  // for a swing leg
         const int swingStartIndex = startTimesIndices[j][p];
         const int swingFinalIndex = finalTimesIndices[j][p];
+                // * 只是判断index是否为-1 或者大于等于modeSequence.size()，如果是则抛出异常
         checkThatIndicesAreValid(j, p, swingStartIndex, swingFinalIndex, modeSequence);
 
+          // * 找到对应的swing leg的 startTime和finalTime，其实就是对应的modeSequence的时间，切换mode时间
         const scalar_t swingStartTime = eventTimes[swingStartIndex];
         const scalar_t swingFinalTime = eventTimes[swingFinalIndex];
 
@@ -121,14 +126,19 @@ void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule, const feet
 /******************************************************************************************************/
 /******************************************************************************************************/
 std::pair<std::vector<int>, std::vector<int>> SwingTrajectoryPlanner::updateFootSchedule(const std::vector<bool>& contactFlagStock) {
+    // info 就是modeSchedule.modeSequence中的size
   const size_t numPhases = contactFlagStock.size();
 
+  //  todo startTimeIndexStock初始化为0，finalTimeIndexStock初始化为0
   std::vector<int> startTimeIndexStock(numPhases, 0);
   std::vector<int> finalTimeIndexStock(numPhases, 0);
 
   // find the startTime and finalTime indices for swing feet
   for (size_t i = 0; i < numPhases; i++) {
+        // * contactFlagStock 为 false的时候表示是swing leg
     if (!contactFlagStock[i]) {
+        // * 找到每个swing leg的startTimeIndexStock和finalTimeIndexStock，
+      // info 比如 swing leg 的 startindex 为上一个 stance leg 的 index，finalindex 为下一个 stance leg 的 index
       std::tie(startTimeIndexStock[i], finalTimeIndexStock[i]) = findIndex(i, contactFlagStock);
     }
   }
@@ -139,17 +149,21 @@ std::pair<std::vector<int>, std::vector<int>> SwingTrajectoryPlanner::updateFoot
 /******************************************************************************************************/
 /******************************************************************************************************/
 feet_array_t<std::vector<bool>> SwingTrajectoryPlanner::extractContactFlags(const std::vector<size_t>& phaseIDsStock) const {
+    // info phaseIDsStock 是 modeSchedule.modeSequence;
   const size_t numPhases = phaseIDsStock.size();
 
   feet_array_t<std::vector<bool>> contactFlagStock;
+    // todo 将4条腿的contactFlagStock初始化为4个空的vector<bool>，每个vector<bool>的长度为numPhases
   std::fill(contactFlagStock.begin(), contactFlagStock.end(), std::vector<bool>(numPhases));
 
   for (size_t i = 0; i < numPhases; i++) {
+        // todo 将modeSchedule.modeSequence中的每个modeNumber转换为对应的contactFlag，返回 contact_flag_t
     const auto contactFlag = modeNumber2StanceLeg(phaseIDsStock[i]);
     for (size_t j = 0; j < numFeet_; j++) {
       contactFlagStock[j][i] = contactFlag[j];
     }
   }
+    // todo 返回4条腿 根据modeSchedule.modeSequence中的每个modeNumber转换为对应的contactFlag true or false
   return contactFlagStock;
 }
 
@@ -160,6 +174,8 @@ std::pair<int, int> SwingTrajectoryPlanner::findIndex(size_t index, const std::v
   const size_t numPhases = contactFlagStock.size();
 
   // skip if it is a stance leg
+    // * updateFootSchedule函数里面调用了findIndex
+  // * 说明进入时候的判断失误了，在这里是不会进入的，估计是为了findIndex函数的通用性
   if (contactFlagStock[index]) {
     return {0, 0};
   }

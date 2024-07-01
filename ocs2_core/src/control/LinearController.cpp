@@ -82,6 +82,8 @@ vector_t LinearController::computeInput(scalar_t t, const vector_t& x) {
   vector_t uff = LinearInterpolation::interpolate(indexAlpha, biasArray_);
   const matrix_t k = LinearInterpolation::interpolate(indexAlpha, gainArray_);
 
+  // todo 当你执行 uff.noalias() += k * x; 时，它告诉Eigen不要为中间结果分配额外的内存，
+  // todo 而是直接在 uff 上执行矩阵运算，从而提高了性能和降低了内存开销。
   uff.noalias() += k * x;
   return uff;
 }

@@ -182,6 +182,16 @@ ocs2_msgs::mpc_flattened_controller MPC_ROS_Interface::createMpcPolicyMsg(const 
 /******************************************************************************************************/
 void MPC_ROS_Interface::publisherWorker() {
   while (!terminateThread_) {
+    // info std::mutex: 互斥锁
+// 如果mutex当前没有被任何线程lock，calling thread锁定它，该线程拥有mutex，直到调用unlock释放mutex；
+// 如果mutex当前已经被其他线程lock，calling thread阻塞，直到其他线程unlock
+
+// std::lock_guard对std::mutex做了封装，通过对象生命周期管理mutex，lock_guard被销毁时锁自动释放，
+// 防止mutex在核心区域内return等造成mutex无法释放。
+
+// std::unique_lock相比于std::lock_guard有更多操作，例如，使用try_lock()方法尝试lock mutex，
+// 若lock失败（即mutex已经被其他线程lock），则直接跳过对临界区操作，而不是阻塞线程。
+
     std::unique_lock<std::mutex> lk(publisherMutex_);
 
     msgReady_.wait(lk, [&] { return (readyToPublish_ || terminateThread_); });
@@ -191,6 +201,8 @@ void MPC_ROS_Interface::publisherWorker() {
     }
 
     {
+      // std::lock_guard对std::mutex做了封装，通过对象生命周期管理mutex，lock_guard被销毁时锁自动释放，
+      // 防止mutex在核心区域内return等造成mutex无法释放。
       std::lock_guard<std::mutex> policyBufferLock(bufferMutex_);
       publisherCommandPtr_.swap(bufferCommandPtr_);
       publisherPrimalSolutionPtr_.swap(bufferPrimalSolutionPtr_);
@@ -243,12 +255,13 @@ void MPC_ROS_Interface::mpcObservationCallback(const ocs2_msgs::mpc_observation:
   }
 
   // current time, state, input, and subsystem
+    // info 将 msg的数据转换为 SystemObservation
   const auto currentObservation = ros_msg_conversions::readObservationMsg(*msg);
 
   // measure the delay in running MPC
   mpcTimer_.startTimer();
 
-  // run MPC
+  // todo run MPC
   bool controllerIsUpdated = mpc_.run(currentObservation.time, currentObservation.state);
   if (!controllerIsUpdated) {
     return;
@@ -331,6 +344,8 @@ void MPC_ROS_Interface::launchNodes(ros::NodeHandle& nodeHandle) {
   ROS_INFO_STREAM("MPC node is setting up ...");
 
   // Observation subscriber
+  // todo ::ros::TransportHints().tcpNoDelay()函数,用于设置TCP传输的延迟。它可以通过设置TCP_NODELAY选项来禁用Nagle算法,从而减少数据传输的延迟。
+
   mpcObservationSubscriber_ = nodeHandle.subscribe(topicPrefix_ + "_mpc_observation", 1, &MPC_ROS_Interface::mpcObservationCallback, this,
                                                    ::ros::TransportHints().tcpNoDelay());
 

@@ -85,6 +85,9 @@ GaussNewtonDDP::GaussNewtonDDP(ddp::Settings ddpSettings, const RolloutBase& rol
     dynamicsForwardRolloutPtrStock_.emplace_back(rollout.clone());
   }  // end of i loop
 
+//   [捕获列表](参数列表) mutable(可选) 异常属性 -> 返回类型 {
+      // 函数体
+// }
   // search strategy method
   const auto basicStrategySettings = [&]() {
     search_strategy::Settings s;
@@ -97,6 +100,9 @@ GaussNewtonDDP::GaussNewtonDDP(ddp::Settings ddpSettings, const RolloutBase& rol
   auto meritFunc = [this](const PerformanceIndex& p) { return calculateRolloutMerit(p); };
   switch (ddpSettings_.strategy_) {
     case search_strategy::Type::LINE_SEARCH: {
+      // info reference_wrapper 将引用包装成一个对象，即引用的包装器；
+      // todo std::reference_wrapper 是包装引用于可复制、可赋值对象的类模板。
+      // todo  它常用作将容器存储入无法正常保有引用的标准容器(类似 std::vector )的机制
       std::vector<std::reference_wrapper<RolloutBase>> rolloutRefStock;
       std::vector<std::reference_wrapper<OptimalControlProblem>> problemRefStock;
       for (size_t i = 0; i < ddpSettings_.nThreads_; i++) {

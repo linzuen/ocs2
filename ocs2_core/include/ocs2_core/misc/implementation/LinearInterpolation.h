@@ -82,12 +82,18 @@ inline index_alpha_t timeSegment(scalar_t enquiryTime, const std::vector<scalar_
       const scalar_t intervalLength = timeArray[index + 1] - timeArray[index];
       const scalar_t timeTillNext = timeArray[index + 1] - enquiryTime;
 
+      // intervalLength = 时间段的长度
+      // timeTillNext = 距离下一个eventTime的剩下的时间
+
       // Normal case: interval is large enough for normal interpolation
+      // * constexpr 是编译期常量，即在编译期间就可以确定其值
       constexpr scalar_t minIntervalTime = 2.0 * numeric_traits::weakEpsilon<scalar_t>();
       if (intervalLength > minIntervalTime) {
+        // info 返回 index 和 enquiryTime 距离下一个eventTime的剩下的时间 之间的比例
         return {index, (timeTillNext / intervalLength)};
       }
 
+      // todo 以下是 intervalLength < minIntervalTime的情况，即时间间隔太小，无法进行插值
       // Take closes point for small time intervals
       if (timeTillNext < 0.5 * intervalLength) {  // short interval, closest to time[index + 1]
         return {index, scalar_t(0.0)};
@@ -129,10 +135,14 @@ auto interpolate(index_alpha_t indexAlpha, const std::vector<Data, Alloc>& dataA
   assert(dataArray.size() > 0);
   if (dataArray.size() > 1) {
     // Normal interpolation case
+    // * indexAlpha.first 为 enquiryTime 在 timeArray 中的位置 的前一个eventTime的index
+    // * indexAlpha.second 为 enquiryTime 距离下一个eventTime的剩下的时间 与这个eventTime的时间间隔 之间的比例
     int index = indexAlpha.first;
     scalar_t alpha = indexAlpha.second;
     auto& lhs = accessFun(dataArray, index);
     auto& rhs = accessFun(dataArray, index + 1);
+
+    // todo areSameSize() 用于判断stateTrajecoty下某个时间段的state向量 lhs 和 rhs 是否具有相同的大小 
     if (areSameSize(rhs, lhs)) {
       return alpha * lhs + (scalar_t(1.0) - alpha) * rhs;
     } else {

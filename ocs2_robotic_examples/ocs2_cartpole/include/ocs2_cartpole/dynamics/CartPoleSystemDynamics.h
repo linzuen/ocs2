@@ -1,3 +1,11 @@
+/*
+ * @Author: linzuen 13415257309@163.com
+ * @Date: 2024-07-01 16:36:50
+ * @LastEditors: linzuen 13415257309@163.com
+ * @LastEditTime: 2024-07-01 16:50:22
+ * @FilePath: /ocs2/ocs2_robotic_examples/ocs2_cartpole/include/ocs2_cartpole/dynamics/CartPoleSystemDynamics.h
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /******************************************************************************
 Copyright (c) 2017, Farbod Farshidian. All rights reserved.
 
@@ -52,8 +60,10 @@ class CartPoleSytemDynamics : public SystemDynamicsBaseAD {
 
   CartPoleSytemDynamics(const CartPoleSytemDynamics& rhs) = default;
 
+  // info 原型---对象创建型模式
   CartPoleSytemDynamics* clone() const override { return new CartPoleSytemDynamics(*this); }
 
+    // todo state：[theta,x,theta_dot,x_dot]
   ad_vector_t systemFlowMap(ad_scalar_t time, const ad_vector_t& state, const ad_vector_t& input,
                             const ad_vector_t& parameters) const override {
     const ad_scalar_t cosTheta = cos(state(0));

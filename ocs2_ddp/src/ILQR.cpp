@@ -44,6 +44,7 @@ ILQR::ILQR(ddp::Settings ddpSettings, const RolloutBase& rollout, const OptimalC
   }
 
   // dynamics discretizer
+  // info : 选择离散化方法
   sensitivityDiscretizer_ = [&]() {
     switch (settings().backwardPassIntegratorType_) {
       case IntegratorType::EULER:

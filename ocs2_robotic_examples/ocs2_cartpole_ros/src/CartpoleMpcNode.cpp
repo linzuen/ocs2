@@ -1,3 +1,11 @@
+/*
+ * @Author: linzuen 13415257309@163.com
+ * @Date: 2024-07-01 16:36:50
+ * @LastEditors: linzuen 13415257309@163.com
+ * @LastEditTime: 2024-07-01 16:52:15
+ * @FilePath: /ocs2/ocs2_robotic_examples/ocs2_cartpole_ros/src/CartpoleMpcNode.cpp
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /******************************************************************************
 Copyright (c) 2017, Farbod Farshidian. All rights reserved.
 
@@ -55,6 +63,7 @@ int main(int argc, char** argv) {
   // Robot interface
   const std::string taskFile = ros::package::getPath("ocs2_cartpole") + "/config/" + taskFileFolderName + "/task.info";
   const std::string libFolder = ros::package::getPath("ocs2_cartpole") + "/auto_generated";
+  // 完成最优问题的构建 cost constraint dynamics initial_guess
   ocs2::cartpole::CartPoleInterface cartPoleInterface(taskFile, libFolder, true /*verbose*/);
 
   // MPC

@@ -106,6 +106,8 @@ class TrajectorySpreading final {
 
   // helper function: get index of the iterator returned by upper_bound function
   int upperBoundIndex(const scalar_array_t& timeTrajectory, scalar_t queryTime) const {
+    // todo std::distance() 是一个 C++ 标准库函数，用于计算两个迭代器之间的距离
+    // todo std::upper_bound() 用二分查找算法在已按升序排列的序列中返回指向第一个大于给定值的元素的迭代器
     return std::distance(timeTrajectory.begin(), std::upper_bound(timeTrajectory.begin(), timeTrajectory.end(), queryTime));
   }
 

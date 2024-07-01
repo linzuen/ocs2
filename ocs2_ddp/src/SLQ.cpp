@@ -64,11 +64,15 @@ SLQ::SLQ(ddp::Settings ddpSettings, const RolloutBase& rollout, const OptimalCon
   for (size_t i = 0; i < settings().nThreads_; i++) {
     bool preComputeRiccatiTerms = settings().preComputeRiccatiTerms_ && (settings().strategy_ == search_strategy::Type::LINE_SEARCH);
     bool isRiskSensitive = !numerics::almost_eq(settings().riskSensitiveCoeff_, 0.0);
+    //  *ContinuousTimeRiccatiEquations  This class implements the Riccati differential equations for SLQ problem.
+    // info  preComputeRiccatiTerms = true的话 assuming that Hessein of the Hamiltonian is positive definite. 
+    // info 计算黎卡提方程会更高效
     riccatiEquationsPtrStock_.emplace_back(new ContinuousTimeRiccatiEquations(preComputeRiccatiTerms, isRiskSensitive));
     riccatiEquationsPtrStock_.back()->setRiskSensitiveCoefficient(settings().riskSensitiveCoeff_);
     riccatiIntegratorPtrStock_.emplace_back(newIntegrator(integratorType));
   }  // end of i loop
 
+  // todo 如果程序本身使用了多线程，需要使用以下方式初始化eigen
   Eigen::initParallel();
 }
 

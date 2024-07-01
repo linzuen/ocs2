@@ -199,6 +199,8 @@ void SqpSolver::runImpl(scalar_t initTime, const vector_t& initState, scalar_t f
 
   // Trajectory spread of primalSolution_
   if (!primalSolution_.timeTrajectory_.empty()) {
+    // info std :: ignore，用于忽略未使用的变量
+    // * 使用“TrajectorySpreading”策略，根据模式计划中的最后更改，就地调整原始解决方案。
     std::ignore = trajectorySpread(primalSolution_.modeSchedule_, this->getReferenceManager().getModeSchedule(), primalSolution_);
   }
 
@@ -375,6 +377,8 @@ PerformanceIndex SqpSolver::setupQuadraticSubproblem(const std::vector<Annotated
         auto result = multiple_shooting::setupIntermediateNode(ocpDefinition, sensitivityDiscretizer_, ti, dt, x[i], x[i + 1], u[i]);
         metrics[i] = multiple_shooting::computeMetrics(result);
         workerPerformance += multiple_shooting::computePerformanceIndex(result, dt);
+
+        // * Use a projection method to resolve the state-input constraint Cx+Du+e
         if (settings_.projectStateInputEqualityConstraints) {
           multiple_shooting::projectTranscription(result, settings_.extractProjectionMultiplier);
         }

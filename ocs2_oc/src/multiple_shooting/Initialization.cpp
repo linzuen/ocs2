@@ -1,3 +1,11 @@
+/*
+ * @Author: linzuen 13415257309@163.com
+ * @Date: 2024-07-01 16:36:50
+ * @LastEditors: linzuen 13415257309@163.com
+ * @LastEditTime: 2024-07-01 16:47:40
+ * @FilePath: /ocs2/ocs2_oc/src/multiple_shooting/Initialization.cpp
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /******************************************************************************
 Copyright (c) 2020, Farbod Farshidian. All rights reserved.
 
@@ -50,8 +58,10 @@ void initializeStateInputTrajectories(const vector_t& initState, const std::vect
   }
 
   // Initial state
+  //  getIntervalStart returns the start of the interval, i.e. the time of the previous node
   const scalar_t initTime = getIntervalStart(timeDiscretization[0]);
   if (initTime < interpolateStateTill) {
+    // interpolate previous solution
     stateTrajectory.push_back(LinearInterpolation::interpolate(initTime, primalSolution.timeTrajectory_, primalSolution.stateTrajectory_));
   } else {
     stateTrajectory.push_back(initState);
